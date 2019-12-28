@@ -1,4 +1,5 @@
 # 1、配置项
+
 要对tomcat调优，必须先了解有关tomcat参数配置项。tomcat配置在${tomcat}/conf/server.xml中，主要关注线程池(Executor)和连接器（Connector）配置。
 
 ## 1.1、线程池配置
@@ -9,9 +10,7 @@
 表示可组件之间Tomcat中共享的线程池。从历史上看，每个连接器（Connector）都会创建一个线程池，但是当配置为支持执行器时，您可以在（主要）连接器之间以及其他组件之间共享线程池。
 主要配置项（更多配置说明参考tomcat官网：[http://tomcat.apache.org/tomcat-8.5-doc/config/executor.html](http://tomcat.apache.org/tomcat-8.5-doc/config/executor.html)）：
 
-| **配置项**   | **用途**   | **默认值**   | **描述**   | 
-|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
-| maxThreads   | 活动线程的最大数量   | 200，但配置文件中设置的为150   |    | 
+![图片](http://www.sunnymaple.cn/images/tomcat/1/1.png)
 
 ## 1.2、连接器配置
 ```
@@ -20,13 +19,7 @@
                redirectPort="8443" />
 ```
 除以上配置之外，还有些参数配置项（更多配置说明参考tomcat官网：[http://tomcat.apache.org/tomcat-8.5-doc/config/http.html](http://tomcat.apache.org/tomcat-8.5-doc/config/http.html)）：
-| **配置项**   | **用途**   | **默认值**   | **描述**   | 
-|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
-| executor   | 线程池配置   | 无   | 指定线程池配置项name的值，如果存在，则其他有关线程配置属性将失效；如果不设置，则连接器将使用内部线程池   | 
-| maxThreads   | 请求处理线程的最大数量   | 200   |    | 
-| connectionTimeout   | 连接超时时间   | 60s   | 但是配置文件中设置的是20000ms即20s，实际默认值为20s   | 
-| acceptCount   | 等待接受accept的请求数量限制   | 100   |    | 
-| maxConnections   | 最大连接数   | 1w   |    | 
+![图片](http://www.sunnymaple.cn/images/tomcat/1/2.png)
 
 # 2、参数调整
 tomcat的最大能接收的请求数：
@@ -37,7 +30,7 @@ tomcat的最大能接收的请求数：
 
 它们的关系如下：
 
-![图片](https://uploader.shimo.im/f/a3g1uOA9uHEVEUG6.png!thumbnail)
+![图片](http://www.sunnymaple.cn/images/tomcat/1/4.png)
 
 ## 2.1、maxConnections的调整
 >maxConnections = （1+0.2）*  maxThreads
@@ -63,9 +56,10 @@ acceptCount的值tomcat默认是100，Linux默认是128。
 
 其中本章所用到有关测试代码、相关工具下载地址以及学习资料：
 
-* 本章测试代码（Git地址）：
+* 本章测试代码（Git地址）：[https://github.com/sunnymaple/tomcat-adjust](https://github.com/sunnymaple/tomcat-adjust)
 * jmeter测试工具下载地址：[http://mirror.bit.edu.cn/apache//jmeter/binaries/apache-jmeter-5.2.1.zip](http://mirror.bit.edu.cn/apache//jmeter/binaries/apache-jmeter-5.2.1.zip)
 * jmeter学习文档：[https://www.cnblogs.com/jessicaxu/p/7501770.html](https://www.cnblogs.com/jessicaxu/p/7501770.html)
+* jmeter测试用例（下载后添加到jmeter中）：[https://github.com/sunnymaple/tomcat-adjust/blob/master/WebTest.jmx](https://github.com/sunnymaple/tomcat-adjust/blob/master/WebTest.jmx)
 ## 3.1、数量测试
 本次测试连接数量的控制以及验证总连接数与maxConnections、acceptCount的关系。
 
@@ -94,36 +88,36 @@ java -jar tomcat-adjust-0.0.1-SNAPSHOT.jar --server.tomcat.max-connections=2 --s
 ### 3.1.1、linux系统
 将jar文件上传到Linux系统中，然后执行上述命令启动程序
 
-![图片](https://uploader.shimo.im/f/F00Not974yoo866L.png!thumbnail)
+![图片](http://www.sunnymaple.cn/images/tomcat/1/5.png)
 
 下面我们将使用jMeter性能测试工具来进行测试，配置如下：
 
-![图片](https://uploader.shimo.im/f/0PI5Yo2PpWYERWrH.png!thumbnail)
+![图片](http://www.sunnymaple.cn/images/tomcat/1/6.png)
 
 其中192.168.0.135为我Linux服务器地址，线程属性：
 
-![图片](https://uploader.shimo.im/f/6ta9NEiXXCULbvBn.png!thumbnail)
+![图片](http://www.sunnymaple.cn/images/tomcat/1/7.png)
 
 即配置了一秒钟请求10个线程，循环执行一次
 
 参数配置好后，右击“数量测试”->启动，然后点击“查看结果树”，查看执行结果：
 
-![图片](https://uploader.shimo.im/f/GUJJqG88rRAerT4H.gif)
+![图片](http://www.sunnymaple.cn/images/tomcat/1/8.gif)
 
 可以看到10个线程都请求成功了，原则是应该只有5个线程被处理，其他5个线程执行失败，这是因为第2节讲的Linux的不仅在tcp握手成功后可以堆积请求，在握手的过程也可以堆积请求（这是操作系统方面决定的，不必纠结太多）。
 
 ### 3.1.2、Windows系统
 同样的代码，我们在Windows系统中也执行上述jar命令：
 
-![图片](https://uploader.shimo.im/f/SscXPWOsjyArrUVn.png!thumbnail)
+![图片](http://www.sunnymaple.cn/images/tomcat/1/9.png)
 
 修改jmeter测试用例上的ip地址为127.0.0.1，然后启动测试，结果如下：
 
-![图片](https://uploader.shimo.im/f/s3LChTitjvstPBQl.gif)
+![图片](http://www.sunnymaple.cn/images/tomcat/1/10.gif)
 
 可以看到结果，5个请求失败，5个成功，打开其中一个失败的请求：
 
-![图片](https://uploader.shimo.im/f/Wf9cdMVuLBsjfZvL.png!thumbnail)
+![图片](http://www.sunnymaple.cn/images/tomcat/1/11.png)
 
 ```
 Thread Name:数量测试 1-6
@@ -170,7 +164,34 @@ public String test() throws InterruptedException {
 ```
 在jmeter上添加线程组，用于参数调优测试，配置如下：
 
-![图片](https://uploader.shimo.im/f/tUqQ2FJ126sCRgwL.png!thumbnail)
+![图片](http://www.sunnymaple.cn/images/tomcat/1/12.png)
 
 1秒钟发送1000个请求线程，连续发生10次，即10s钟内发生1万次请求。
+
+停止3.1节执行的jar包，修改参数如下：
+
+```
+java -jar tomcat-adjust-0.0.1-SNAPSHOT.jar --server.tomcat.max-thread=8
+```
+并发线程数设置为8（我这里测试的Linux系统是4核的cpu）,按2.3节计算，大概需要8个线程为最佳（实际情况可以多次车上调整）。
+启动jmeter测试案例（执行过程截图）：
+
+![图片](http://www.sunnymaple.cn/images/tomcat/1/13.png)
+
+* 聚合报告
+
+异常率12.04，吞吐量54.4/sec
+
+* top查看
+
+cpu使用率396.3
+
+结果分析不是很理想，异常率（即请求被拒绝<Connection refused: connect>所占百分比）相对比较高，cpu使用率过高，情况不是很理想。
+
+接下来可以加上acceptCount和maxConnections参数，多调试几次，已到达最优的效果，过程很繁琐，就是不断更换参数的值，不断调试。
+
+# 4、总结
+3.2节中，原则上不管怎么调试，应该都不会好的结果，因为测试代码中，相对执行的时间比较长（模拟实际开发中代码写的烂）。
+
+最好的做法是优化代码，这些参数配置只能井上天花，真要做到高并发，高吞吐量，异常少的项目，可以考虑使用缓存中间件（redis）、消息中间件（流量消峰）、集群分流等手段。
 
