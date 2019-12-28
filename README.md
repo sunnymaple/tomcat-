@@ -10,7 +10,7 @@
 表示可组件之间Tomcat中共享的线程池。从历史上看，每个连接器（Connector）都会创建一个线程池，但是当配置为支持执行器时，您可以在（主要）连接器之间以及其他组件之间共享线程池。
 主要配置项（更多配置说明参考tomcat官网：[http://tomcat.apache.org/tomcat-8.5-doc/config/executor.html](http://tomcat.apache.org/tomcat-8.5-doc/config/executor.html)）：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/1.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/tomcat/1/1.png)
 
 ## 1.2、连接器配置
 ```
@@ -19,7 +19,7 @@
                redirectPort="8443" />
 ```
 除以上配置之外，还有些参数配置项（更多配置说明参考tomcat官网：[http://tomcat.apache.org/tomcat-8.5-doc/config/http.html](http://tomcat.apache.org/tomcat-8.5-doc/config/http.html)）：
-![图片](http://www.sunnymaple.cn/images/tomcat/1/2.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/tomcat/1/2.png)
 
 # 2、参数调整
 tomcat的最大能接收的请求数：
@@ -30,7 +30,7 @@ tomcat的最大能接收的请求数：
 
 它们的关系如下：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/4.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/tomcat/1/4.png)
 
 ## 2.1、maxConnections的调整
 >maxConnections = （1+0.2）*  maxThreads
@@ -88,36 +88,36 @@ java -jar tomcat-adjust-0.0.1-SNAPSHOT.jar --server.tomcat.max-connections=2 --s
 ### 3.1.1、linux系统
 将jar文件上传到Linux系统中，然后执行上述命令启动程序
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/5.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/tomcat/1/5.png)
 
 下面我们将使用jMeter性能测试工具来进行测试，配置如下：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/6.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/tomcat/1/6.png)
 
 其中192.168.0.135为我Linux服务器地址，线程属性：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/7.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/tomcat/1/7.png)
 
 即配置了一秒钟请求10个线程，循环执行一次
 
 参数配置好后，右击“数量测试”->启动，然后点击“查看结果树”，查看执行结果：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/8.gif)
+![图片](http://github.com/sunnymaple/-images/raw/master/tomcat/1/8.gif)
 
 可以看到10个线程都请求成功了，原则是应该只有5个线程被处理，其他5个线程执行失败，这是因为第2节讲的Linux的不仅在tcp握手成功后可以堆积请求，在握手的过程也可以堆积请求（这是操作系统方面决定的，不必纠结太多）。
 
 ### 3.1.2、Windows系统
 同样的代码，我们在Windows系统中也执行上述jar命令：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/9.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/tomcat/1/9.png)
 
 修改jmeter测试用例上的ip地址为127.0.0.1，然后启动测试，结果如下：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/10.gif)
+![图片](http://github.com/sunnymaple/-images/raw/master/tomcat/1/10.gif)
 
 可以看到结果，5个请求失败，5个成功，打开其中一个失败的请求：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/11.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/1/11.png)
 
 ```
 Thread Name:数量测试 1-6
@@ -164,7 +164,7 @@ public String test() throws InterruptedException {
 ```
 在jmeter上添加线程组，用于参数调优测试，配置如下：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/12.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/1/12.png)
 
 1秒钟发送1000个请求线程，连续发生10次，即10s钟内发生1万次请求。
 
@@ -176,7 +176,7 @@ java -jar tomcat-adjust-0.0.1-SNAPSHOT.jar --server.tomcat.max-thread=8
 并发线程数设置为8（我这里测试的Linux系统是4核的cpu）,按2.3节计算，大概需要8个线程为最佳（实际情况可以多次车上调整）。
 启动jmeter测试案例（执行过程截图）：
 
-![图片](http://www.sunnymaple.cn/images/tomcat/1/13.png)
+![图片](http://github.com/sunnymaple/-images/raw/master/1/13.png)
 
 * 聚合报告
 
